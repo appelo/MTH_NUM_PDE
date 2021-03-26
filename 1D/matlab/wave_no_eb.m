@@ -17,6 +17,8 @@ k = Tend / nsteps
 x = h*(1:nx-1)';
 
 % Initial data
+% AG
+
 
 % Start the time loop
 for it = 1:nt
@@ -50,13 +52,13 @@ end
 function u = update_bc(u,x,t);
 % This function returns the solution array with correctly imposed
 % boundary conditions 
-    
+   % DEAA 
 end
 
 function u = h_bc(x,t)
 % This function returns u at x and t.
 % x is supposed to be on the boundary    
-    
+   % NH 
 end
 
 function f = forcing(x,t)
@@ -69,5 +71,5 @@ function uxx = compute_uxx(u,h)
 % This function returns the second derivative 
 % at all interior points 
 % (but uxx has the same dimension as u)    
-    
+  %YH  
 end
