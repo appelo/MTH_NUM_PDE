@@ -62,7 +62,7 @@ end
 function f = forcing(x,t)
 % This function returns the right hand side forcing 
 % to the wave equation 
-f=sin(t)*exp(-(x-1/2)^2);
+f=sin(10*t)*exp(-(x-1/2)^2);
 end
 
 function uxx = compute_uxx(u,h)
