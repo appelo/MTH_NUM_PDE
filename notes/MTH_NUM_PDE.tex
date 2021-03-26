@@ -604,7 +604,7 @@ u^0_{i} = g_0({x_i}),  i = 1,\ldots,n_x.
 \]
 We then use the displacement and velocity initial conditions to approximate the solution at time $t = -k$. We have the Taylor expansion 
 \[
-u(x,-k) = u(x,0) - k u_t(x,0) + \frac{k^2}{2} u_{tt},
+	u(x,-k) \approx u(x,0) - k u_t(x,0) + \frac{k^2}{2} u_{tt}(x,0),
 \]
 which together with the equation gives 
 \[
@@ -616,7 +616,7 @@ u^n_{1} = h_0(t_n), \ \  u^n_{n_x} = h_1(t_n).
 \]
 Finally to discretize the equation we use centered finite differences in space and time and get the update formula
 \be
-u^{n+1}_i = 2u^n_i - u^{n-1}_i + \dpx \dmx u^n_i + f^n_i, \ \  i = 2,\ldots,n_x-1. 
+u^{n+1}_i = 2u^n_i - u^{n-1}_i +k^2(\dpx \dmx u^n_i + f^n_i), \ \  i = 2,\ldots,n_x-1. 
 \ee
 
 {\bf Today we will see how to implement this.}
