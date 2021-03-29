@@ -59,9 +59,9 @@ function u = h_bc(x,t)
 % This function returns u at x and t.
 % x is supposed to be on the boundary
 % h_0, h_1 are our boundary conditions
-if x == 0
+if x < L/2
     u = h_0(t);
-elseif x == L
+else
     u = h_1(t);
 end
 
@@ -78,4 +78,14 @@ function uxx = compute_uxx(u,h)
 % at all interior points 
 % (but uxx has the same dimension as u)    
   %YH  
+end
+
+function u = h_0(t)
+% This function returns u at t on the boundary x = 0
+
+end
+
+function u = h_1(t)
+% This function returns u at t on the boundary x = L
+
 end
