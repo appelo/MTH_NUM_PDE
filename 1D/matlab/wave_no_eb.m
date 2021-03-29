@@ -57,8 +57,14 @@ end
 
 function u = h_bc(x,t)
 % This function returns u at x and t.
-% x is supposed to be on the boundary    
-   % NH 
+% x is supposed to be on the boundary
+% h_0, h_1 are our boundary conditions
+if x == 0
+    u = h_0(t);
+elseif x == L
+    u = h_1(t);
+end
+
 end
 
 function f = forcing(x,t)
