@@ -18,7 +18,7 @@ x = h*(1:nx-1)';
 
 % Initial data
 % AG
-
+u=init_cond(x);
 
 % Start the time loop
 for it = 1:nt
@@ -48,7 +48,9 @@ for it = 1:nt
 end
 
 
-
+function u=init_cond(x);
+   u=sin(pi*x/3.0)
+end
 function u = update_bc(u,x,t);
 % This function returns the solution array with correctly imposed
 % boundary conditions 
