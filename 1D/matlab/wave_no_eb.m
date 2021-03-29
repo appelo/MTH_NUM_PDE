@@ -83,6 +83,14 @@ function uxx = compute_uxx(u,h)
   [dim_x, dim_y]  = size(u);
   %initialize the uxx matrix
   uxx = zeros(dim_x, dim_x);
+
+  % Here I was more thinking something along the lines 
+  uxx = zeros(dim_x,1);
+  ih2 = 1/h^2;
+  for ix = 2:dim_x-1
+        uxx(ix) = ih2*(u(ix+1)-2*u(ix)+u(ix-1));
+  end
+  
   
   %change this condition for more complicated shape
   boundary_left = 1;
