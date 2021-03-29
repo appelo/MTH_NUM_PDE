@@ -76,16 +76,36 @@ end
 function uxx = compute_uxx(u,h)
 % This function returns the second derivative 
 % at all interior points 
-% (but uxx has the same dimension as u)    
+% (but uxx has the same dimension as u)   <-- I think we need the x, not
+% the u
   %YH  
-end
-
-function u = h_0(t)
-% This function returns u at t on the boundary x = 0
-
-end
-
-function u = h_1(t)
-% This function returns u at t on the boundary x = L
-
+  %Get the dimension of u
+  [dim_x, dim_y]  = size(u);
+  %initialize the uxx matrix
+  uxx = zeros(dim_x, dim_x);
+  
+  %change this condition for more complicated shape
+  boundary_left = 1;
+  boundary_right = dim_x;
+  
+  for ix = 1:dim_x
+      if ix ~= boundary_left && ix ~= boundary_right
+          %if the point is regular
+          uxx(ix, ix-1:ix+1) = [1,-2, 1];
+      elseif ix == boundary_left
+          uxx(ix, ix:ix+1) = [-2, 1];
+          %impose some boundary condition for the left point
+          uxx(ix, end) = 1;   %<-- For circular boundary condition
+          %uxx(ix, end) = 0;   %<-- For dirchlet condition
+          %uxx(ix, 1:s) == []  %<-- if using some interpolation
+      elseif ix == boundary_right
+          uxx(ix, ix-1:ix) = [1, -2];
+          uxx(ix, 1) = 1; %<-- For circular boundary condition
+          %uxx(ix, 1) = 0 %<-- For dirchlet condition
+          %uxx(ix, ix-s:ix) = [] %<--- if using some interpolation
+      end
+  end
+  uxx = uxx / h^2;
+        
+      
 end
