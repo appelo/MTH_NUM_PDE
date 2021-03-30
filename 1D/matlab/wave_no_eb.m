@@ -82,10 +82,10 @@ end
 
 function u = h_0(t)
 % This function returns u at t on the boundary x = 0
-
+    u = 5*sin(t)-pi*cos(t);
 end
 
 function u = h_1(t)
 % This function returns u at t on the boundary x = L
-
+    u = 4*sin(t-pi/3)-2*pi*cos(t-pi/3);
 end
