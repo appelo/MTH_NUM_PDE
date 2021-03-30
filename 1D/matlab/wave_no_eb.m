@@ -19,7 +19,7 @@ x = h*(1:nx-1)';
 % Initial data
 % AG
 u=init_cond(x);
-
+um=u-k*init_velocity(x)+k^2/2*(compute_uxx(u,h)+forcing(x,0))
 % Start the time loop
 for it = 1:nt
     t = (it-1)*k;
@@ -47,9 +47,11 @@ for it = 1:nt
     
 end
 
-
 function u=init_cond(x);
    u=sin(pi*x/3.0)
+end
+function u=init_velocity(x);
+    u=sin(2*pi*x)
 end
 function u = update_bc(u,x,t);
 % This function returns the solution array with correctly imposed
