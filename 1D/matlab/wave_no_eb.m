@@ -91,6 +91,17 @@ end
  end
 
 
+function u = h_0(t)
+% This function returns u at t on the boundary x = 0
+    u = 5*sin(t)-pi*cos(t);
+end
+
+function u = h_1(t)
+% This function returns u at t on the boundary x = L
+    u = 4*sin(t-pi/3)-2*pi*cos(t-pi/3);
+
+end
+
 function f = forcing(x,t)
 % This function returns the right hand side forcing 
 % to the wave equation 
@@ -100,7 +111,6 @@ end
 function uxx = compute_uxx(u,h)
 % This function returns the second derivative 
 % at all interior points 
-% (but uxx has the same dimension as u) 
 
 % Get the dimension of u
     [dim_x, dim_y]  = size(u);
@@ -112,4 +122,5 @@ function uxx = compute_uxx(u,h)
     for ix = 2:dim_x-1
         uxx(ix) = ih2*(u(ix+1)-2*u(ix)+u(ix-1));
     end
+
 end
