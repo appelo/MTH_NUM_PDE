@@ -18,8 +18,8 @@ x = h*(1:nx-1)';
 
 % Initial data
 % AG
-
-
+u=init_cond(x);
+um=u-k*init_velocity(x)+k^2/2*(compute_uxx(u,h)+forcing(x,0))
 % Start the time loop
 for it = 1:nt
     t = (it-1)*k;
@@ -47,8 +47,12 @@ for it = 1:nt
     
 end
 
-
-
+function u=init_cond(x);
+   u=sin(pi*x/3.0)
+end
+function u=init_velocity(x);
+    u=sin(2*pi*x)
+end
 function u = update_bc(u,x,t);
 % This function returns the solution array with correctly imposed
 % boundary conditions 
@@ -67,6 +71,17 @@ end
 
 end
 
+function u = h_0(t)
+% This function returns u at t on the boundary x = 0
+    u = 5*sin(t)-pi*cos(t);
+end
+
+function u = h_1(t)
+% This function returns u at t on the boundary x = L
+    u = 4*sin(t-pi/3)-2*pi*cos(t-pi/3);
+
+end
+
 function f = forcing(x,t)
 % This function returns the right hand side forcing 
 % to the wave equation 
@@ -76,16 +91,16 @@ end
 function uxx = compute_uxx(u,h)
 % This function returns the second derivative 
 % at all interior points 
-% (but uxx has the same dimension as u)    
-  %YH  
-end
 
-function u = h_0(t)
-% This function returns u at t on the boundary x = 0
-    u = 5*sin(t)-pi*cos(t);
-end
+% Get the dimension of u
+    [dim_x, dim_y]  = size(u);
+    % initialize the uxx matrix
+    uxx = zeros(dim_x, dim_x);
+    % Here I was more thinking something along the lines 
+    uxx = zeros(dim_x,1);  
+    ih2 = 1/h^2;
+    for ix = 2:dim_x-1
+        uxx(ix) = ih2*(u(ix+1)-2*u(ix)+u(ix-1));
+    end
 
-function u = h_1(t)
-% This function returns u at t on the boundary x = L
-    u = 4*sin(t-pi/3)-2*pi*cos(t-pi/3);
 end
