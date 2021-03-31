@@ -85,35 +85,16 @@ function uxx = compute_uxx(u,h)
   uxx = zeros(dim_x, dim_x);
 
   % Here I was more thinking something along the lines 
-  uxx = zeros(dim_x,1);
+  uxx = zeros(dim_x,1);  
   ih2 = 1/h^2;
   for ix = 2:dim_x-1
         uxx(ix) = ih2*(u(ix+1)-2*u(ix)+u(ix-1));
   end
+  uxx(1) = ih2 *(-2*u(1) + u(2));
+  uxx(end) = ih2 *(-2u(end) + u(end-1) );
   
   
-  %change this condition for more complicated shape
-  boundary_left = 1;
-  boundary_right = dim_x;
   
-  for ix = 1:dim_x
-      if ix ~= boundary_left && ix ~= boundary_right
-          %if the point is regular
-          uxx(ix, ix-1:ix+1) = [1,-2, 1];
-      elseif ix == boundary_left
-          uxx(ix, ix:ix+1) = [-2, 1];
-          %impose some boundary condition for the left point
-          uxx(ix, end) = 1;   %<-- For circular boundary condition
-          %uxx(ix, end) = 0;   %<-- For dirchlet condition
-          %uxx(ix, 1:s) == []  %<-- if using some interpolation
-      elseif ix == boundary_right
-          uxx(ix, ix-1:ix) = [1, -2];
-          uxx(ix, 1) = 1; %<-- For circular boundary condition
-          %uxx(ix, 1) = 0 %<-- For dirchlet condition
-          %uxx(ix, ix-s:ix) = [] %<--- if using some interpolation
-      end
-  end
-  uxx = uxx / h^2;
         
       
 end
