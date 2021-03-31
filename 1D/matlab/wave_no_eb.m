@@ -76,25 +76,16 @@ end
 function uxx = compute_uxx(u,h)
 % This function returns the second derivative 
 % at all interior points 
-% (but uxx has the same dimension as u)   <-- I think we need the x, not
-% the u
-  %YH  
-  %Get the dimension of u
-  [dim_x, dim_y]  = size(u);
-  %initialize the uxx matrix
-  uxx = zeros(dim_x, dim_x);
+% (but uxx has the same dimension as u) 
 
-  % Here I was more thinking something along the lines 
-  uxx = zeros(dim_x,1);  
-  ih2 = 1/h^2;
-  for ix = 2:dim_x-1
+% Get the dimension of u
+    [dim_x, dim_y]  = size(u);
+    % initialize the uxx matrix
+    uxx = zeros(dim_x, dim_x);
+    % Here I was more thinking something along the lines 
+    uxx = zeros(dim_x,1);  
+    ih2 = 1/h^2;
+    for ix = 2:dim_x-1
         uxx(ix) = ih2*(u(ix+1)-2*u(ix)+u(ix-1));
-  end
-  uxx(1) = ih2 *(-2*u(1) + u(2));
-  uxx(end) = ih2 *(-2u(end) + u(end-1) );
-  
-  
-  
-        
-      
+    end
 end
