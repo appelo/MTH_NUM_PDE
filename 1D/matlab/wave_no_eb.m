@@ -1,3 +1,4 @@
+clear
 
 % Physical parameters
 L = 3;
@@ -17,9 +18,11 @@ k = Tend / nsteps
 x = h*(1:nx-1)';
 
 % Initial data
-% AG
-u=init_cond(x);
-um=u-k*init_velocity(x)+k^2/2*(compute_uxx(u,h)+forcing(x,0))
+u = init_cond(x);
+um = u - k*init_velocity(x) + k^2/2*(compute_uxx(u,h)+forcing(x,0));
+
+um = update_bc(um,x,-k);
+
 % Start the time loop
 for it = 1:nt
     t = (it-1)*k;
@@ -48,27 +51,32 @@ for it = 1:nt
 end
 
 function u=init_cond(x);
-   u=sin(pi*x/3.0)
+   u = sin(pi*x/3.0);
 end
 function u=init_velocity(x);
-    u=sin(2*pi*x)
+    u = sin(2*pi*x);
 end
+
 function u = update_bc(u,x,t);
 % This function returns the solution array with correctly imposed
 % boundary conditions 
-   % DEAA 
+    u(1) = h_bc(x(1),t);
+    u(end) = h_bc(x(end),t);
 end
 
 function u = h_bc(x,t)
 % This function returns u at x and t.
 % x is supposed to be on the boundary
 % h_0, h_1 are our boundary conditions
-if x < L/2
-    u = h_0(t);
-else
-    u = h_1(t);
-end
-
+    
+    L = x(end);
+    
+    if x < L/2
+        u = h_0(t);
+    else
+        u = h_1(t);
+    end
+    
 end
 
 function f = forcing(x,t)
