@@ -79,10 +79,22 @@ function u = h_bc(x,t)
     
 end
 
+
+ function u = h_0(t)
+ % This function returns u at t on the boundary x = 0
+
+ end
+
+ function u = h_1(t)
+ % This function returns u at t on the boundary x = L
+
+ end
+
+
 function f = forcing(x,t)
 % This function returns the right hand side forcing 
 % to the wave equation 
-f=sin(10*t)*exp(-(x-1/2)^2);
+f = sin(10*t)*exp(-(x-1/2).^2);
 end
 
 function uxx = compute_uxx(u,h)
