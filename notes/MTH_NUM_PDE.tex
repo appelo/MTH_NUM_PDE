@@ -689,12 +689,27 @@ I cannot stress enough how useful it is to use the method of manufactured soluti
 
 
 \subsection*{Why Twilight Zone?}
-The expression \emph{Twilight Zone solution} or \emph{Twilight Zone forcing} comes from the similarity between the trigonometric solution (see Figure \ref{fig:mms}) and the spiral in the TV-show the Twilight Zone. The expression was coined by David Brown at Los Alamos sometimes in the 80s or 90s.   
-\end{document} 
+The expression \emph{Twilight Zone solution} or \emph{Twilight Zone forcing} comes from the similarity between the trigonometric solution and the spiral in the TV-show the Twilight Zone. The expression was coined by David Brown at Los Alamos sometimes in the 80s or 90s.   
 
 
+\clearpage
 
+\section{A first 2D code}
+In the directory \verb+2D/matlab+ there is a skeleton for a 2D code with no embedded boundaries. The code has twilight forcing and should be very easy to finish (do so).   
 
+\section{An embedded 2D code}
+Use the simple 2D code and twilight to check that all of these work 
+\begin{enumerate}
+\item Find the mask.
+\item Find interior ghost points (IGP).
+\item Update IGP by twilight. 
+\item Compute $\Delta u$ in interior points (not including IGPs).
+\item Implement the line by line interpolation update.
+\item Check that you have second order accuracy at IGPs.
+\item Check that you can compute $\Delta u$ in interior points (this will not be second order accurate).
+\item Check that you can compute \verb+up+ accurately.
+\item Put the solver together and check accuracy at the final time. 
+\end{enumerate}
 
 
 \bibliographystyle{plain}
