@@ -7,14 +7,14 @@ Yt = 1/2;
 
 Tend = 1.23;
 
-CFL = 0.5;
+CFL = 0.25;
 % Use Twilight?
 mms = 1;
 % Plotting frequency
-nplot = 100000;
+nplot = 1;
 
-nx = 31;
-ny = 21;
+nx = 121;
+ny = 81;
 
 hx = (Xr-Xl)/(nx-1);
 hy = (Yt-Yb)/(ny-1);
@@ -50,7 +50,7 @@ else
     % FIX ME
 end
 
-if (1==1)
+if (1==12)
     err = um-mmsfun(x,y,t-dt,0,0,0);
     mesh(x,y,err)
     title('Error in initial data for um')
@@ -58,7 +58,7 @@ if (1==1)
     pause
 end
 
-if (1==1)
+if (1==12)
     [ulef,urig,ubot,utop] = get_bc(x,y,t,mms);
     u = update_bc(u,ulef,urig,ubot,utop);
     err = u-mmsfun(x,y,t,0,0,0);
@@ -68,7 +68,7 @@ if (1==1)
     pause
 end
 
-if (1==1)
+if (1==12)
 
     lapu = compute_lap(u,x,y,t,0);
     err = lapu-mmsfun(x,y,t,0,2,0)-mmsfun(x,y,t,0,0,2);
@@ -83,9 +83,7 @@ if (1==1)
     pause
 end
 
-return
-
-if (1==1)
+if (1==12)
     [ulef,urig,ubot,utop] = get_bc(x,y,t,mms);
     u = update_bc(u,ulef,urig,ubot,utop);
     lapu = compute_lap(u,x,y,t,mms);
@@ -100,7 +98,8 @@ end
     
 
 % Main timestepping loop
-
+ERR = 0; 
+TIME = 0;
 for it = 1:nt
     t = (it-1)*dt;
     % Compute forcing on Boundaries 
@@ -129,11 +128,13 @@ for it = 1:nt
     end
 
     % Add option of error calculation every now and then.
-    err = up-mmsfun(x,y,t+dt,0,0,0);
+    err = u-mmsfun(x,y,t,0,0,0);
     title(['Error in ', num2str(it)  ,' timestep'])
     disp(['Max error in ' num2str(it) ' timestep ' num2str(max(max(abs(err))))])
-    
+    ERR = [ERR ; max(max(abs(err)))];
+    TIME = [TIME ; t];
 end
+
 
 % Add option of error calculation at the final time.
 err = u - mmsfun(x,y,Tend,0,0,0);
