@@ -121,12 +121,16 @@ for it = 1:nt
     end
 
     % Add option of error calculation every now and then.
-       
+    err = up-mmsfun(x,y,t+dt,0,0,0);
+    title(['Error in ', num2str(it)  ,' timestep'])
+    disp(['Max error in ' num2str(it) ' timestep ' num2str(max(max(abs(err))))])
     
 end
 
 % Add option of error calculation at the final time.
-
+err = u - mmsfun(x,y,Tend,0,0,0);
+title('Error in first timestep')
+disp(['Max error in final timestep ' num2str(max(max(abs(err))))])
 
 
 
