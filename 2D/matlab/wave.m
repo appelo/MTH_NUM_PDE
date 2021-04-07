@@ -98,21 +98,21 @@ if (1==1)
     pause
 end    
     
-return
+
 % Main timestepping loop
 
 for it = 1:nt
-    
+    t = (it-1)*dt;
     % Compute forcing on Boundaries 
     [ulef,urig,ubot,utop] = get_bc(x,y,t,mms);
     % Update Boundary conditions;
-    
+    u = update_bc(u,ulef,urig,ubot,utop);
     % Compute Laplace(u)
-    
+    lapu = compute_lap(u,x,y,t,mms);
     % Compute Forcing
-    
+    f = compute_forcing(x,y,t,mms);
     % Leap frog solution
-    
+    up = 2*u-um+dt^2*(lapu+f);
     % Swap variables
     um = u;
     u = up;
@@ -120,20 +120,25 @@ for it = 1:nt
     t = t+dt;
     if(mod(it,nplot)==0)
         % Compute forcing on Boundaries 
-        
+        [ulef,urig,ubot,utop] = get_bc(x,y,t,mms);
         % Update Boundary conditions
-        
+        u = update_bc(u,ulef,urig,ubot,utop);
         mesh(x,y,u)
         drawnow
+
     end
 
     % Add option of error calculation every now and then.
-       
+    err = up-mmsfun(x,y,t+dt,0,0,0);
+    title(['Error in ', num2str(it)  ,' timestep'])
+    disp(['Max error in ' num2str(it) ' timestep ' num2str(max(max(abs(err))))])
     
 end
 
 % Add option of error calculation at the final time.
-
+err = u - mmsfun(x,y,Tend,0,0,0);
+title('Error in first timestep')
+disp(['Max error in final timestep ' num2str(max(max(abs(err))))])
 
 
 
