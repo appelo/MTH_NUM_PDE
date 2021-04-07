@@ -69,13 +69,21 @@ if (1==1)
 end
 
 if (1==1)
-    lapu = compute_lap(u,x,y,t,mms);
+
+    lapu = compute_lap(u,x,y,t,0);
     err = lapu-mmsfun(x,y,t,0,2,0)-mmsfun(x,y,t,0,0,2);
+    err(1,:) = 0;
+    err(end,:) = 0;
+    err(:,1) = 0;
+    err(:,end) = 0;
+
     mesh(x,y,err)
     title('Error in Lap')
     disp(['Max error in Laplace ' num2str(max(max(abs(err))))])
     pause
 end
+
+return
 
 if (1==1)
     [ulef,urig,ubot,utop] = get_bc(x,y,t,mms);
@@ -161,13 +169,22 @@ end
 function [lapu] = compute_lap(U,x,y,t,mms);
 
 % Compute approximate Laplacian of u.
-    
+
+    [x_size, y_size] = size(U);
+    hx = x(2,2) - x(1,1);
+    hy = y(2,2) - y(1,1);
+
     lapu = zeros(size(U));
     if(mms ==1)
         lapu = mmsfun(x,y,t,0,2,0)+mmsfun(x,y,t,0,0,2);
     else
-        disp(['option not implemented yet'])
-        return
+
+        for ix = 2:x_size-1
+            for jy = 2:y_size-1
+                lapu(ix,jy) = 1/hx^2 *(U(ix+1,jy)-2*U(ix,jy)+U(ix-1,jy)) + 1/hy^2*(U(ix,jy+1)-2*U(ix,jy)+U(ix,jy-1));
+            end
+        end
+
     end
 end
 
