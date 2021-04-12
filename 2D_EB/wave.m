@@ -13,8 +13,8 @@ mms = 1;
 % Plotting frequency
 nplot = 1;
 
-nx = 101;
-ny = 101;
+nx = 11;
+ny = 11;
 
 hx = (Xr-Xl)/(nx-1);
 hy = (Yt-Yb)/(ny-1);
@@ -47,10 +47,17 @@ end
 xm = x./(mask==1);
 ym = y./(mask==1);
 
-plot(xm,ym,'k',xm',ym','k','linewidth',2)
+clf
+plot(xm,ym,'k',xm',ym','k',xm,ym,'bo','linewidth',2)
 axis equal
 axis([Xl Xr Yb Yt])
 
+[xx,yy] = meshgrid(linspace(-1,1,501));
+zz = level(xx,yy);
+hold on
+contour(xx,yy,zz,[0,0],'r','linewidth',2)
+
+return
 maskin = mask;
 
 % TASK 1 mark the outermost point by changing maskin(i,j) = -1 if
@@ -61,9 +68,9 @@ maskin = mask;
 % all the maskin = -1 points. 
 % This can for example be one array of size nbp x 4 where the first
 % two entries on each row correspond to the (i_igp,j_igp) coordinate of the
-% inner ghostpoint and the second pair is the (i,j) coordinate of
+% inner ghostpoint and the second pair is the (i_in,j_in) coordinate of
 % the interior point that is included in the interpolation (You
-% nedd some logic to check that this point exists)   
+% need some logic to check that this point exists)   
 % You also need a double array of size nbp x 4 with the values c_in and c_gam such
 % that u_IGP = c_in*u(i_in,j_in) + c_gam*eb_boundary_fun(x_gam,y_gam,t); 
 % you also need 2 values for x_gam y_gam.
@@ -204,8 +211,8 @@ disp(['Max error in final timestep ' num2str(max(max(abs(err))))])
 
 function f = level(x,y);
     
-    a = 0.8;
-    b = 0.7;
+    a = 0.82;
+    b = 0.9;
     f = (x/a).^2+(y/b).^2 - 1;
     
 end
