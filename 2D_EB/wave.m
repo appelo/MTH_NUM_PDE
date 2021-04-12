@@ -1,9 +1,9 @@
 clear
 
-Xl = -1/3;
-Xr = 1/3;
-Yb = -1/2;
-Yt = 1/2;
+Xl = -1;
+Xr = 1;
+Yb = -1;
+Yt = 1;
 
 Tend = 1.23;
 
@@ -13,8 +13,8 @@ mms = 1;
 % Plotting frequency
 nplot = 1;
 
-nx = 121;
-ny = 81;
+nx = 101;
+ny = 101;
 
 hx = (Xr-Xl)/(nx-1);
 hy = (Yt-Yb)/(ny-1);
@@ -23,7 +23,6 @@ dt = CFL*min([hx,hy]);
 
 nt = ceil(Tend/dt);
 dt = Tend/nt;
-
 
 % Grid
 x = zeros(nx,ny);
@@ -35,6 +34,66 @@ for i = 1:nx
         y(i,j) = Yb + (j-1)*hy;
     end
 end
+
+mask = zeros(nx,ny);
+for i = 1:nx
+    for j = 1:ny
+        if(level(x(i,j),y(i,j)) < 0)
+            mask(i,j) = 1;
+        end
+    end 
+end
+
+xm = x./(mask==1);
+ym = y./(mask==1);
+
+plot(xm,ym,'k',xm',ym','k','linewidth',2)
+axis equal
+axis([Xl Xr Yb Yt])
+
+maskin = mask;
+
+% TASK 1 mark the outermost point by changing maskin(i,j) = -1 if
+% (i,j) is a boundary point. Check that you got this correct by
+% addding some red stars to the above plot.   
+
+% TASK 3 Set up a data structure with interpolation information for
+% all the maskin = -1 points. 
+% This can for example be one array of size nbp x 4 where the first
+% two entries on each row correspond to the (i_igp,j_igp) coordinate of the
+% inner ghostpoint and the second pair is the (i,j) coordinate of
+% the interior point that is included in the interpolation (You
+% nedd some logic to check that this point exists)   
+% You also need a double array of size nbp x 4 with the values c_in and c_gam such
+% that u_IGP = c_in*u(i_in,j_in) + c_gam*eb_boundary_fun(x_gam,y_gam,t); 
+% you also need 2 values for x_gam y_gam.
+
+% TASK 2 to do TASK 3 you first need a function that: given
+% (i_igp,j_igp) and (i_in,j_in) finds x_gam and y_gam
+% NOTE that one of these is trivial as it is the same as, say
+% y_gam = y(i_igp,J) = y(i_in,J) when J = j_in = j_gam
+% the other coordinate must then be found by root finding
+% If level(z,y_gam) = 0, then x_gam = z;
+% Note that you know that if, say, i_in < i_igp then 
+% x(i_gp,J) <= z <= x(i_gp+1,J)
+
+
+% TASK 4 Write a function that given the two arrays above updates
+% the values at the interior ghost points at a given time t and
+% assuming the function eb_boundary_fun(x,y,t) is known
+
+% TASK 5 use twilight to impose "fake" exact boundary conditions in all
+% interior ghostpoints (i.e. where maskin == -1) and make sure 
+% the timesteping works. Once the boundary conditions have been
+% updated you can still use the same lapu = compute_lap(u,x,y,t,0);
+% followed by lapu = lapu.*mask; (this sets lapu = 0 on all outside
+% points). The rest of the timestepping loop should not need to
+% change. When you do the error computation make sure you only use
+% mask == 1 points!
+
+
+return
+
 
 t = 0;
 
@@ -143,6 +202,13 @@ disp(['Max error in final timestep ' num2str(max(max(abs(err))))])
 
 
 
+function f = level(x,y);
+    
+    a = 0.8;
+    b = 0.7;
+    f = (x/a).^2+(y/b).^2 - 1;
+    
+end
 
 
 function u = update_bc(u,ulef,urig,ubot,utop);
