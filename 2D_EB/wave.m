@@ -43,12 +43,25 @@ for i = 1:nx
         end
     end 
 end
-
+maskin = mask;
+signal=0;
+for i = 1:nx
+    for j = 1:ny
+        if(mask(i,j)==1)
+            signal=mask(i-1,j)+mask(i+1,j)+mask(i,j-1)+mask(i,j+1);
+            if (signal < 4)
+                maskin(i,j)=-1
+            end
+        end
+    end
+end
 xm = x./(mask==1);
 ym = y./(mask==1);
 
-clf
-plot(xm,ym,'k',xm',ym','k',xm,ym,'bo','linewidth',2)
+xb = x./(maskin==-1);
+yb = y./(maskin==-1);
+%clf
+plot(xm,ym,'k',xm',ym','k',xm,ym,'bo',xb,yb,'r*','linewidth',2)
 axis equal
 axis([Xl Xr Yb Yt])
 
@@ -58,11 +71,10 @@ hold on
 contour(xx,yy,zz,[0,0],'r','linewidth',2)
 
 return
-maskin = mask;
 
 % TASK 1 mark the outermost point by changing maskin(i,j) = -1 if
 % (i,j) is a boundary point. Check that you got this correct by
-% addding some red stars to the above plot.   
+% addding some red stars to the above plot. DONE. 
 
 % TASK 3 Set up a data structure with interpolation information for
 % all the maskin = -1 points. 
