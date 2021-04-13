@@ -73,34 +73,51 @@ hold on
 contour(xx,yy,zz,[0,0],'r','linewidth',2)
 %data structure that contains the ghost and interior point for
 %interpolation
-gp_and_in=zeros(nbp,4);
+ghost_points=zeros(nbp,4);
 count=1;
 for i = 1:nx
     for j = 1:nx
         if(maskin(i,j)==-1)
-           gp_and_in(count,1)=i;
-           gp_and_in(count,2)=j;
+           ghost_points(count,1)=i;
+           ghost_points(count,2)=j;
            count=count+1;
         end
     end
 end
 
 for i = 1:nbp
-    if (level(x(gp_and_in(i,1)-1,gp_and_in(i,2)),y(gp_and_in(i,1)-1,gp_and_in(i,2)))>0)
-        gp_and_in(i,3)=gp_and_in(i,1)+1;
-        gp_and_in(i,4)=gp_and_in(i,2);
-    elseif (level(x(gp_and_in(i,1)+1,gp_and_in(i,2)),y(gp_and_in(i,1)+1,gp_and_in(i,2)))>0)
-        gp_and_in(i,3)=gp_and_in(i,1)-1;
-        gp_and_in(i,4)=gp_and_in(i,2);
-    elseif (level(x(gp_and_in(i,1),gp_and_in(i,2)-1),y(gp_and_in(i,1),gp_and_in(i,2)-1))>0)
-        gp_and_in(i,3)=gp_and_in(i,1);
-        gp_and_in(i,4)=gp_and_in(i,2)+1;
-    elseif (level(x(gp_and_in(i,1),gp_and_in(i,2)+1),y(gp_and_in(i,1),gp_and_in(i,2))+1)>0)
-        gp_and_in(i,3)=gp_and_in(i,1);
-        gp_and_in(i,4)=gp_and_in(i,2)-1;
+    if (level(x(ghost_points(i,1)-1,ghost_points(i,2)),y(ghost_points(i,1)-1,ghost_points(i,2)))>0)
+        ghost_points(i,3)=ghost_points(i,1)+1;
+        ghost_points(i,4)=ghost_points(i,2);
+    elseif (level(x(ghost_points(i,1)+1,ghost_points(i,2)),y(ghost_points(i,1)+1,ghost_points(i,2)))>0)
+        ghost_points(i,3)=ghost_points(i,1)-1;
+        ghost_points(i,4)=ghost_points(i,2);
+    elseif (level(x(ghost_points(i,1),ghost_points(i,2)-1),y(ghost_points(i,1),ghost_points(i,2)-1))>0)
+        ghost_points(i,3)=ghost_points(i,1);
+        ghost_points(i,4)=ghost_points(i,2)+1;
+    elseif (level(x(ghost_points(i,1),ghost_points(i,2)+1),y(ghost_points(i,1),ghost_points(i,2))+1)>0)
+        ghost_points(i,3)=ghost_points(i,1);
+        ghost_points(i,4)=ghost_points(i,2)-1;
     end
 end
-gp_and_in
+
+roots=zeros(nbp,4);
+
+for  i = 1:nbp
+    val=(ghost_points(i,1)==ghost_points(i,3));
+    if(val==1)
+        roots(i,2)=y(ghost_points(i,1),ghost_points(i,2));
+        fun = @(x)level(x,roots(i,2));
+        roots(i,1)= fzero(fun,x(ghost_points(i,1),ghost_points(i,2)));
+    else
+        roots(i,1)=x(ghost_points(i,1),ghost_points(i,2));
+        fun = @(y)level(roots(i,1),y);
+        roots(i,2)= fzero(fun,y(ghost_points(i,1),ghost_points(i,2)));
+    end
+end
+for i = 1:nbp
+    level(roots(i,1),roots(i,2))
+end
 return
 
 % TASK 1 mark the outermost point by changing maskin(i,j) = -1 if
