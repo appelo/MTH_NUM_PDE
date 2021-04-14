@@ -109,15 +109,17 @@ for  i = 1:nbp
         roots(i,2)=y(ghost_points(i,1),ghost_points(i,2));
         fun = @(x)level(x,roots(i,2));
         roots(i,1)= fzero(fun,x(ghost_points(i,1),ghost_points(i,2)));
+        roots(i,3)=(roots(i,1)-x(ghost_points(i,1),ghost_points(i,2)))/(roots(i,1)-x(ghost_points(i,3),ghost_points(i,4)));
+        roots(i,4)=(x(ghost_points(i,1),ghost_points(i,2))-x(ghost_points(i,3),ghost_points(i,4)))/(roots(i,1)-x(ghost_points(i,3),ghost_points(i,4)));
     else
         roots(i,1)=x(ghost_points(i,1),ghost_points(i,2));
         fun = @(y)level(roots(i,1),y);
         roots(i,2)= fzero(fun,y(ghost_points(i,1),ghost_points(i,2)));
+        roots(i,3)=(roots(i,2)-y(ghost_points(i,1),ghost_points(i,2)))/(roots(i,2)-y(ghost_points(i,3),ghost_points(i,4)));
+        roots(i,4)=(y(ghost_points(i,1),ghost_points(i,2))-y(ghost_points(i,3),ghost_points(i,4)))/(roots(i,2)-y(ghost_points(i,3),ghost_points(i,4)));
     end
 end
-for i = 1:nbp
-    level(roots(i,1),roots(i,2))
-end
+%ghost_points
 return
 
 % TASK 1 mark the outermost point by changing maskin(i,j) = -1 if
