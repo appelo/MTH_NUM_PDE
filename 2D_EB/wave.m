@@ -38,14 +38,14 @@ end
 mask = zeros(nx,ny);
 for i = 1:nx
     for j = 1:ny
-        if(level(x(i,j),y(i,j)) < 0)
+        if(level(x(i,j),y(i,j)) < 0) % if inside the computational domain
             mask(i,j) = 1;
         end
     end 
 end
 
-xm = x./(mask==1);
-ym = y./(mask==1);
+xm = x./(mask==1); % extracts x and y coordinates with mask = 1
+ym = y./(mask==1); % (inside computational domain)
 
 clf
 plot(xm,ym,'k',xm',ym','k',xm,ym,'bo','linewidth',2)
@@ -99,13 +99,15 @@ maskin = mask;
 % mask == 1 points!
 
 
+
+
 return
 
 
 t = 0;
 
 % Initial data
-if(mms == 1)
+if(mms == 1) 
     u = mmsfun(x,y,t,0,0,0);
     ut = mmsfun(x,y,t,1,0,0);
     um = mmsfun(x,y,t-dt,0,0,0);
@@ -113,7 +115,7 @@ else
     u = zeros(nx,ny);
     ut = zeros(nx,ny);
     lapu = compute_lap(u,x,y,t,mms);
-    % FIX ME
+    lapu = lapu.*mask;
 end
 
 if (1==12)
@@ -172,8 +174,10 @@ for it = 1:nt
     [ulef,urig,ubot,utop] = get_bc(x,y,t,mms);
     % Update Boundary conditions;
     u = update_bc(u,ulef,urig,ubot,utop);
+    % Impose B.C.s at ghost points here?
     % Compute Laplace(u)
     lapu = compute_lap(u,x,y,t,mms);
+    lapu = lapu.*mask;
     % Compute Forcing
     f = compute_forcing(x,y,t,mms);
     % Leap frog solution
@@ -231,7 +235,7 @@ end
 
 function [ulef,urig,ubot,utop] = get_bc(x,y,t,mms);
 
-% Compute Dirichletboundary condition values for u
+% Compute Dirichlet boundary condition values for u
 
     if(mms == 1)
         ulef = mmsfun(x(1,:),y(1,:),t,0,0,0);
@@ -315,4 +319,42 @@ function f = mmsfun(x,y,tin,td,xd,yd);
     if (xd+yd > 2)
         f=(0*(x+y)).*T;
     end
+end
+
+function u = update_IGP(u,array1,array2,t);
+    % Inputs:
+        % u
+        % array1: array of size (nbp,4) where each row is
+        % (i_igp,j_igp,i_in,j_in)
+        % array2: array of size (nbp,4) where each row is
+        % (c_in,c_gam,x_gam,y_gam)
+        % t: time
+    
+    % Output: 
+        % u: u with updated "boundary conditions" at interior ghost points
+        % at time t
+        
+    nbp = size(array1,1); % number of interior ghost points
+    u_IGP = u;
+    
+    for i = 1:nbp
+        % check all these indices based on actual arrays from Andres/Yutao!
+        i_igp = array1(i,1);
+        j_igp = array1(i,2);
+        i_in  = array1(i,3);
+        j_in  = array1(i,4);
+        
+        c_in  = array2(i,1);
+        c_gam = array2(i,2);
+        x_gam = array2(i,3);
+        y_gam = array2(i,4);
+        
+        u_IGP(i_igp,j_igp) = c_in*u(i_in,j_in) + c_gam*eb_boundary_fun(x_gam,y_gam,t);
+        % not sure if the i_igp and j_igp are coordinates or indices -
+        % check once Andres/Yutao part updated
+        
+    end
+    
+    u = u_IGP;
+    
 end
