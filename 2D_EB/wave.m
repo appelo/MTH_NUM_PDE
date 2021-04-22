@@ -1,5 +1,5 @@
 clear
-
+clf
 Xl = -1;
 Xr = 1;
 Yb = -1;
@@ -13,8 +13,8 @@ mms = 1;
 % Plotting frequency
 nplot = 1;
 
-nx = 11;
-ny = 11;
+nx = 21;
+ny = 21;
 
 hx = (Xr-Xl)/(nx-1);
 hy = (Yt-Yb)/(ny-1);
@@ -44,25 +44,224 @@ for i = 1:nx
     end 
 end
 
-xm = x./(mask==1); % extracts x and y coordinates with mask = 1
-ym = y./(mask==1); % (inside computational domain)
+maskin = mask;
+signal = 0;
+nbp = 0; %number of boundary points
+for i = 1:nx
+    for j = 1:ny
+        if(mask(i,j)==1)
+            signal=mask(i-1,j)+mask(i+1,j)+mask(i,j-1)+mask(i,j+1);
+            if (signal < 4)
+                maskin(i,j)=-1;
+                nbp=nbp+1;
+            end
+        end
+    end
+end
+xm = x./(mask==1);
+ym = y./(mask==1);
 
-clf
-plot(xm,ym,'k',xm',ym','k',xm,ym,'bo','linewidth',2)
+
+xb = x./(maskin==-1);
+yb = y./(maskin==-1);
+%clf
+plot(xm,ym,'k',xm',ym','k',xm,ym,'bo',xb,yb,'r*','linewidth',2)
 axis equal
 axis([Xl Xr Yb Yt])
+
 
 [xx,yy] = meshgrid(linspace(-1,1,501));
 zz = level(xx,yy);
 hold on
 contour(xx,yy,zz,[0,0],'r','linewidth',2)
 
+%data structure that contains the ghost and interior point for
+%interpolation
+ghost_points=zeros(nbp,4);
+count=1;
+for i = 1:nx
+    for j = 1:ny
+        if(maskin(i,j)==-1)
+            % Index coordinates for ghost points
+           ghost_points(count,1)=i;
+           ghost_points(count,2)=j;
+           count = count+1;
+        end
+    end
+end
+
+bcfs = zeros(nbp,4);
+
+for i = 1:nbp
+    igp = ghost_points(i,1); 
+    jgp = ghost_points(i,2);
+    if (level(x(igp-1,jgp),y(igp-1,jgp))>=0)
+        % Look to the left for a root
+        if (level(x(igp,jgp-1),y(igp,jgp-1))>0)
+            % look down for root
+            fun = @(x)level(x,y(igp,jgp));
+            xgam1 = fzero(fun,[x(igp-1,jgp) x(igp,jgp)]);
+            ygam1 = y(igp,jgp);
+            fun = @(y)level(x(igp,jgp),y);
+            xgam2 = x(igp,jgp);
+            ygam2 = fzero(fun,[y(igp,jgp-1) y(igp,jgp)]);
+            if(abs(xgam1-x(igp,jgp)) < abs(ygam2-y(igp,jgp)))
+                plot(xgam1,ygam1,'rp','markersize',14,'linewidth',2)
+                xgam = xgam1; ygam = ygam1;
+            else
+                plot(xgam2,ygam2,'gp','markersize',14,'linewidth',2)
+                xgam = xgam2; ygam = ygam2;
+            end
+        elseif (level(x(igp,jgp+1),y(igp,jgp+1))>0)            
+            % look up for root
+            fun = @(x)level(x,y(igp,jgp));
+            xgam1 = fzero(fun,[x(igp-1,jgp) x(igp,jgp)]);
+            ygam1 = y(igp,jgp);
+            fun = @(y)level(x(igp,jgp),y);
+            xgam2 = x(igp,jgp);
+            ygam2 = fzero(fun,[y(igp,jgp) y(igp,jgp+1)]);
+            if(abs(xgam1-x(igp,jgp)) < abs(ygam2-y(igp,jgp)))
+                xgam = xgam1; ygam = ygam1;
+                plot(xgam1,ygam1,'rs','markersize',14,'linewidth',2)
+            else
+                plot(xgam2,ygam2,'gs','markersize',14,'linewidth',2)
+                xgam = xgam2; ygam = ygam2;
+            end
+        else
+            % Find root to the left! 
+            fun = @(x)level(x,y(igp,jgp));
+            xgam = fzero(fun,[x(igp-1,jgp) x(igp,jgp)]);
+            ygam = y(igp,jgp);
+            plot(xgam,ygam,'bp','markersize',14)
+       end
+    elseif (level(x(igp+1,jgp),y(igp+1,jgp))>=0)
+        % Look to the right for a root
+        if (level(x(igp,jgp-1),y(igp,jgp-1))>0)
+            % look down for root
+            fun = @(x)level(x,y(igp,jgp));
+            xgam1 = fzero(fun,[x(igp,jgp) x(igp+1,jgp)]);
+            ygam1 = y(igp,jgp);
+            fun = @(y)level(x(igp,jgp),y);
+            xgam2 = x(igp,jgp);
+            ygam2 = fzero(fun,[y(igp,jgp-1) y(igp,jgp)]);
+            if(abs(xgam1-x(igp,jgp)) < abs(ygam2-y(igp,jgp)))
+                plot(xgam1,ygam1,'rp','markersize',14,'linewidth',2)
+                xgam = xgam1; ygam = ygam1;
+            else
+                plot(xgam2,ygam2,'gp','markersize',14,'linewidth',2)
+                xgam = xgam2; ygam = ygam2;
+            end
+           
+        elseif (level(x(igp,jgp+1),y(igp,jgp+1))>0)            
+            % look up for root
+            fun = @(x)level(x,y(igp,jgp));
+            xgam1 = fzero(fun,[x(igp,jgp) x(igp+1,jgp)]);
+            ygam1 = y(igp,jgp);
+            fun = @(y)level(x(igp,jgp),y);
+            xgam2 = x(igp,jgp);
+            ygam2 = fzero(fun,[y(igp,jgp) y(igp,jgp+1)]);
+            if(abs(xgam1-x(igp,jgp)) < abs(ygam2-y(igp,jgp)))
+                plot(xgam1,ygam1,'rs','markersize',14,'linewidth',2)
+                xgam = xgam1; ygam = ygam1;
+            else
+                plot(xgam2,ygam2,'gs','markersize',14,'linewidth',2)
+                xgam = xgam2; ygam = ygam2;
+            end
+        else
+            % Find root to the right! 
+            fun = @(x)level(x,y(igp,jgp));
+            xgam = fzero(fun,[x(igp,jgp) x(igp+1,jgp)]);
+            ygam = y(igp,jgp);
+            plot(xgam,ygam,'bp','markersize',14)
+        end
+    else
+        if (level(x(igp,jgp-1),y(igp,jgp-1))>0)
+            % look down for root
+            fun = @(y)level(x(igp,jgp),y);
+            xgam = x(igp,jgp);
+            ygam = fzero(fun,[y(igp,jgp-1) y(igp,jgp)]);
+            plot(xgam,ygam,'gp','markersize',14,'linewidth',2)
+        elseif (level(x(igp,jgp+1),y(igp,jgp+1))>=0)            
+            % look up for root
+            fun = @(y)level(x(igp,jgp),y);
+            xgam = x(igp,jgp);
+            ygam = fzero(fun,[y(igp,jgp) y(igp,jgp+1)]);
+            plot(xgam,ygam,'gs','markersize',14,'linewidth',2)
+        else
+            fun = @(y)level(x(igp,jgp),y);
+            xgam = x(igp,jgp);
+            ygam = fzero(fun,y(igp,jgp));
+            plot(xgam,ygam,'m*','markersize',14,'linewidth',2)
+        end
+    end        
+
+    if()
+        bcfs(i,1)= xgam;
+        bcfs(i,2) = ygp;
+        bcfs(i,3)=(xgam-xgp)/(xgam-xsp);
+        bcfs(i,4)=(xgp-xsp)/(xgam-xsp);
+    else
+    end
+
+end
 return
-maskin = mask;
+
+
+
+return
+for i = 1:nbp
+    igp = ghost_points(i,1); 
+    jgp = ghost_points(i,2);
+    % Logic wrong?
+    if (level(x(igp-1,jgp),y(igp-1,jgp))>0)
+        ghost_points(i,3) = igp+1;
+        ghost_points(i,4) = jgp;
+    elseif (level(x(igp+1,jgp),y(igp+1,jgp))>0)
+        ghost_points(i,3) = igp-1;
+        ghost_points(i,4) = jgp;
+    elseif (level(x(igp,jgp-1),y(igp,jgp-1))>0)
+        ghost_points(i,3) = igp;
+        ghost_points(i,4) = jgp+1;
+    elseif (level(x(igp,jgp+1),y(igp,jgp)+1)>0)
+        ghost_points(i,3) = igp;
+        ghost_points(i,4) = jgp-1;
+    end
+end
+
+
+
+for  i = 1:nbp
+    igp = ghost_points(i,1); 
+    jgp = ghost_points(i,2);
+    isp = ghost_points(i,3); 
+    jsp = ghost_points(i,4);
+    xgp = x(igp,jgp);
+    ygp = y(igp,jgp);
+    xsp = x(isp,jsp);
+    ysp = y(isp,jsp);
+    
+    val = (igp==isp);
+
+    if(val==1)
+        roots(i,2)=ygp;
+        fun = @(x)level(x,roots(i,2));
+        roots(i,1)= fzero(fun,xgp);
+        roots(i,3)=(roots(i,1)-xgp)/(roots(i,1)-xsp);
+        roots(i,4)=(xgp-xsp)/(roots(i,1)-xsp);
+    else
+        roots(i,1)=xgp;
+        fun = @(y)level(roots(i,1),y);
+        roots(i,2)= fzero(fun,ygp);
+        roots(i,3)=(roots(i,2)-ygp)/(roots(i,2)-ysp);
+        roots(i,4)=(ygp-ysp)/(roots(i,2)-ysp);
+    end
+end
+%ghost_points
+return
 
 % TASK 1 mark the outermost point by changing maskin(i,j) = -1 if
 % (i,j) is a boundary point. Check that you got this correct by
-% addding some red stars to the above plot.   
+% addding some red stars to the above plot. DONE. 
 
 % TASK 3 Set up a data structure with interpolation information for
 % all the maskin = -1 points. 
