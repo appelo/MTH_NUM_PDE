@@ -114,6 +114,8 @@ for i = 1:nbp
                 bcfs(i,2)=ygam;
                 xin=x(ghost_points(i,3),ghost_points(i,4));
                 yin=y(ghost_points(i,3),ghost_points(i,4));
+                bcfs(i,3)=(xgam-x(igp,jgp))/(xgam-xin);
+                bcfs(i,4)=(x(igp,jgp)-xin)/(xgam-xin);
                 plot(xin,yin,'g*','markersize',14,'linewidth',2)
             else
                 plot(xgam2,ygam2,'gp','markersize',14,'linewidth',2)
@@ -124,6 +126,8 @@ for i = 1:nbp
                 bcfs(i,2)=ygam;
                 xin=x(ghost_points(i,3),ghost_points(i,4));
                 yin=y(ghost_points(i,3),ghost_points(i,4));
+                bcfs(i,3)=(ygam-y(igp,jgp))/(ygam-yin);
+                bcfs(i,4)=(y(igp,jgp)-yin)/(ygam-yin);
                 plot(xin,yin,'g*','markersize',14,'linewidth',2)
             end
         elseif (level(x(igp,jgp+1),y(igp,jgp+1))>0)            
@@ -144,6 +148,8 @@ for i = 1:nbp
                 bcfs(i,2)=ygam;
                 xin=x(ghost_points(i,3),ghost_points(i,4));
                 yin=y(ghost_points(i,3),ghost_points(i,4));
+                bcfs(i,3)=(xgam-x(igp,jgp))/(xgam-xin);
+                bcfs(i,4)=(x(igp,jgp)-xin)/(xgam-xin);
                 plot(xin,yin,'g*','markersize',14,'linewidth',2)
             else
                 plot(xgam2,ygam2,'gs','markersize',14,'linewidth',2)
@@ -154,6 +160,8 @@ for i = 1:nbp
                 bcfs(i,2)=ygam;
                 xin=x(ghost_points(i,3),ghost_points(i,4));
                 yin=y(ghost_points(i,3),ghost_points(i,4));
+                bcfs(i,3)=(ygam-x(igp,jgp))/(ygam-yin);
+                bcfs(i,4)=(y(igp,jgp)-xin)/(ygam-yin);
                 plot(xin,yin,'g*','markersize',14,'linewidth',2)
             end
         else
@@ -168,6 +176,8 @@ for i = 1:nbp
             bcfs(i,2)=ygam;
             xin=x(ghost_points(i,3),ghost_points(i,4));
             yin=y(ghost_points(i,3),ghost_points(i,4));
+            bcfs(i,3)=(xgam-x(igp,jgp))/(xgam-xin);
+            bcfs(i,4)=(x(igp,jgp)-xin)/(xgam-xin);
             plot(xin,yin,'g*','markersize',14,'linewidth',2)
        end
     elseif (level(x(igp+1,jgp),y(igp+1,jgp))>=0)
@@ -189,6 +199,8 @@ for i = 1:nbp
                 bcfs(i,2)=ygam;
                 xin=x(ghost_points(i,3),ghost_points(i,4));
                 yin=y(ghost_points(i,3),ghost_points(i,4));
+                bcfs(i,3)=(xgam-x(igp,jgp))/(xgam-xin);
+                bcfs(i,4)=(x(igp,jgp)-xin)/(xgam-xin);
                 plot(xin,yin,'g*','markersize',14,'linewidth',2)
             else
                 plot(xgam2,ygam2,'gp','markersize',14,'linewidth',2)
@@ -199,6 +211,8 @@ for i = 1:nbp
                 bcfs(i,2)=ygam;
                 xin=x(ghost_points(i,3),ghost_points(i,4));
                 yin=y(ghost_points(i,3),ghost_points(i,4));
+                bcfs(i,3)=(ygam-y(igp,jgp))/(ygam-xin);
+                bcfs(i,4)=(y(igp,jgp)-yin)/(ygam-yin);
                 plot(xin,yin,'g*','markersize',14,'linewidth',2)
             end
            
@@ -219,6 +233,8 @@ for i = 1:nbp
                 bcfs(i,2)=ygam;
                 xin=x(ghost_points(i,3),ghost_points(i,4));
                 yin=y(ghost_points(i,3),ghost_points(i,4));
+                bcfs(i,3)=(xgam-x(igp,jgp))/(xgam-xin);
+                bcfs(i,4)=(x(igp,jgp)-xin)/(xgam-xin);
                 plot(xin,yin,'g*','markersize',14,'linewidth',2)
             else
                 plot(xgam2,ygam2,'gs','markersize',14,'linewidth',2)
@@ -229,6 +245,8 @@ for i = 1:nbp
                 bcfs(i,2)=ygam;
                 xin=x(ghost_points(i,3),ghost_points(i,4));
                 yin=y(ghost_points(i,3),ghost_points(i,4));
+                bcfs(i,3)=(ygam-y(igp,jgp))/(ygam-yin);
+                bcfs(i,4)=(y(igp,jgp)-yin)/(ygam-yin);
                 plot(xin,yin,'g*','markersize',14,'linewidth',2)
             end
         else
@@ -243,6 +261,8 @@ for i = 1:nbp
             bcfs(i,2)=ygam;
             xin=x(ghost_points(i,3),ghost_points(i,4));
             yin=y(ghost_points(i,3),ghost_points(i,4));
+            bcfs(i,3)=(xgam-x(igp,jgp))/(xgam-xin);
+            bcfs(i,4)=(x(igp,jgp)-xin)/(xgam-xin);
             plot(xin,yin,'g*','markersize',14,'linewidth',2)
         end
     else
@@ -258,6 +278,8 @@ for i = 1:nbp
             bcfs(i,2)=ygam;
             xin=x(ghost_points(i,3),ghost_points(i,4));
             yin=y(ghost_points(i,3),ghost_points(i,4));
+            bcfs(i,3)=(ygam-x(igp,jgp))/(ygam-yin);
+            bcfs(i,4)=(y(igp,jgp)-yin)/(ygam-yin);
             plot(xin,yin,'g*','markersize',14,'linewidth',2)
         elseif (level(x(igp,jgp+1),y(igp,jgp+1))>=0)            
             % look up for root
@@ -271,6 +293,8 @@ for i = 1:nbp
             bcfs(i,2)=ygam;
             xin=x(ghost_points(i,3),ghost_points(i,4));
             yin=y(ghost_points(i,3),ghost_points(i,4));
+            bcfs(i,3)=(ygam-x(igp,jgp))/(ygam-yin);
+            bcfs(i,4)=(y(igp,jgp)-yin)/(ygam-yin);
             plot(xin,yin,'g*','markersize',14,'linewidth',2)
         %else
         %    fun = @(y)level(x(igp,jgp),y);
@@ -296,32 +320,7 @@ return
 
 return
 
-for  i = 1:nbp
-    igp = ghost_points(i,1); 
-    jgp = ghost_points(i,2);
-    isp = ghost_points(i,3); 
-    jsp = ghost_points(i,4);
-    xgp = x(igp,jgp);
-    ygp = y(igp,jgp);
-    xsp = x(isp,jsp);
-    ysp = y(isp,jsp);
-    
-    val = (igp==isp);
 
-    if(val==1)
-        roots(i,2)=ygp;
-        fun = @(x)level(x,roots(i,2));
-        roots(i,1)= fzero(fun,xgp);
-        roots(i,3)=(roots(i,1)-xgp)/(roots(i,1)-xsp);
-        roots(i,4)=(xgp-xsp)/(roots(i,1)-xsp);
-    else
-        roots(i,1)=xgp;
-        fun = @(y)level(roots(i,1),y);
-        roots(i,2)= fzero(fun,ygp);
-        roots(i,3)=(roots(i,2)-ygp)/(roots(i,2)-ysp);
-        roots(i,4)=(ygp-ysp)/(roots(i,2)-ysp);
-    end
-end
 %ghost_points
 return
 
