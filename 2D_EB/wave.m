@@ -314,15 +314,15 @@ for i = 1:nbp
     %end
 
 end
-return
+% return
 
 
 
-return
+% return
 
 
 %ghost_points
-return
+% return
 
 % TASK 1 mark the outermost point by changing maskin(i,j) = -1 if
 % (i,j) is a boundary point. Check that you got this correct by
@@ -365,7 +365,7 @@ return
 
 
 
-return
+% return
 
 
 t = 0;
@@ -403,6 +403,7 @@ end
 if (1==12)
 
     lapu = compute_lap(u,x,y,t,0);
+    lapu = lapu.*mask;
     err = lapu-mmsfun(x,y,t,0,2,0)-mmsfun(x,y,t,0,0,2);
     err(1,:) = 0;
     err(end,:) = 0;
@@ -419,6 +420,7 @@ if (1==12)
     [ulef,urig,ubot,utop] = get_bc(x,y,t,mms);
     u = update_bc(u,ulef,urig,ubot,utop);
     lapu = compute_lap(u,x,y,t,mms);
+    lapu = lapu.*mask;
     f = compute_forcing(x,y,t,mms);
     up = 2*u-um+dt^2*(lapu+f);
     err = up-mmsfun(x,y,t+dt,0,0,0);
@@ -438,7 +440,8 @@ for it = 1:nt
     [ulef,urig,ubot,utop] = get_bc(x,y,t,mms);
     % Update Boundary conditions;
     u = update_bc(u,ulef,urig,ubot,utop);
-    % Impose B.C.s at ghost points here?
+    % Impose B.C.s at ghost points here
+    u = update_IGP(u,ghost_points,bcfs,t);
     % Compute Laplace(u)
     lapu = compute_lap(u,x,y,t,mms);
     lapu = lapu.*mask;
@@ -456,6 +459,7 @@ for it = 1:nt
         [ulef,urig,ubot,utop] = get_bc(x,y,t,mms);
         % Update Boundary conditions
         u = update_bc(u,ulef,urig,ubot,utop);
+        u = update_IGP(u,ghost_points,bcfs,t);
         mesh(x,y,u)
         drawnow
 
@@ -463,6 +467,7 @@ for it = 1:nt
 
     % Add option of error calculation every now and then.
     err = u-mmsfun(x,y,t,0,0,0);
+    err = err(maskin==1); % only calculate error at interior points
     title(['Error in ', num2str(it)  ,' timestep'])
     disp(['Max error in ' num2str(it) ' timestep ' num2str(max(max(abs(err))))])
     ERR = [ERR ; max(max(abs(err)))];
@@ -472,6 +477,7 @@ end
 
 % Add option of error calculation at the final time.
 err = u - mmsfun(x,y,Tend,0,0,0);
+err = err(maskin==1); % only calculate error at interior points
 title('Error in first timestep')
 disp(['Max error in final timestep ' num2str(max(max(abs(err))))])
 
@@ -585,40 +591,50 @@ function f = mmsfun(x,y,tin,td,xd,yd);
     end
 end
 
-function u = update_IGP(u,array1,array2,t);
+function u = update_IGP(u,ghost_points,bcfs,t);
     % Inputs:
         % u
-        % array1: array of size (nbp,4) where each row is
-        % (i_igp,j_igp,i_in,j_in)
-        % array2: array of size (nbp,4) where each row is
-        % (c_in,c_gam,x_gam,y_gam)
+        % ghost_points: array of size (nbp,4) where each row is
+        % (igp,jgp,i_in,j_in)
+        % bcfs: array of size (nbp,4) where each row is
+        % (x_gam,y_gam,c_int,c_gam)
         % t: time
     
     % Output: 
         % u: u with updated "boundary conditions" at interior ghost points
         % at time t
         
-    nbp = size(array1,1); % number of interior ghost points
+    nbp = size(ghost_points,1); % number of interior ghost points
     u_IGP = u;
     
     for i = 1:nbp
         % check all these indices based on actual arrays from Andres/Yutao!
-        i_igp = array1(i,1);
-        j_igp = array1(i,2);
-        i_in  = array1(i,3);
-        j_in  = array1(i,4);
+        igp   = ghost_points(i,1);
+        jgp   = ghost_points(i,2);
+        i_in  = ghost_points(i,3);
+        j_in  = ghost_points(i,4);
         
-        c_in  = array2(i,1);
-        c_gam = array2(i,2);
-        x_gam = array2(i,3);
-        y_gam = array2(i,4);
+        x_gam = bcfs(i,1);
+        y_gam = bcfs(i,2);
+        c_int = bcfs(i,3);
+        c_gam = bcfs(i,4);
         
-        u_IGP(i_igp,j_igp) = c_in*u(i_in,j_in) + c_gam*eb_boundary_fun(x_gam,y_gam,t);
-        % not sure if the i_igp and j_igp are coordinates or indices -
-        % check once Andres/Yutao part updated
+        u_IGP(igp,jgp) = c_int*u(i_in,j_in) + c_gam*eb_boundary_fun(x_gam,y_gam,t);
         
     end
     
     u = u_IGP;
     
+end
+
+% Function to try out boundary conditions on the embedded boundary
+function f = eb_boundary_fun(x_gam,y_gam,t);
+    % Inputs:
+        % x_gam, y_gam: coordinates on boundary
+        % t: time
+    
+    % Output:
+        % f: value of boundary function at (x_gam,y_gam) at time t
+    
+    f = sin(x_gam)*sin(y_gam) + t;
 end
